@@ -13,10 +13,12 @@ The MVP retains verified commits and branches locally. It does **not** create Gi
 ## Installation
 
 ```sh
-pi install npm:@prjct.app/pi-signals@0.1.0
+pi install npm:@prjct.app/pi-signals@0.1.1
 ```
 
-Node >=22.19 and Pi >=1.0.4 are required. The CLI is shipped inside the npm package; no source checkout or development loader is required. SDKs are peer dependencies and privacy protection comes from the independent `@prjct.app/pi-secrets` dependency. Existing sessions load the extension on an idle `/reload`; installation does not restart them.
+Node >=22.19 and Pi >=1.0.4 are required. The CLI is shipped inside the npm package; no source checkout or development loader is required. SDKs are peer dependencies and privacy protection comes from the independent `@prjct.app/pi-secrets` dependency. Existing sessions load the extension on an idle `/reload`; installation does not restart them. On session start the extension records Pi's public SDK location in `host.json` so the standalone CLI uses the host-provided peers. Before the first Pi load, `PI_SIGNALS_SDK_ROOT` can explicitly supply that installed SDK directory.
+
+Pi's private npm bin directory may not be on your shell PATH. In that case use `~/.pi/agent/npm/node_modules/.bin/pi-signals` (adjust for `PI_CODING_AGENT_DIR`). The scheduler records the absolute npm entry point and does not depend on a PATH alias.
 
 ## Agent tools and commands
 

@@ -40,3 +40,13 @@ test('a test that passes on the baseline cannot certify a fix or reach review', 
   });
   assert.equal(result.status, 'blocked'); assert.equal(calls, 1); assert.match(result.explanation, /baseline/);
 });
+
+test('agent-created commits cannot bypass inspection of the complete candidate diff', async () => {
+  const f = await fixture();
+  const result = await repair(f.issue, f.repo, f.tree.path, f.tree.base, [], undefined, async task => {
+    write(join(task.cwd, 'value.cjs'), 'module.exports = () => 1;\n');
+    await must(task.cwd, ['git', 'add', 'value.cjs']); await must(task.cwd, ['git', 'commit', '-m', 'premature agent commit']);
+    await call(task, 'signal_fix', { explanation: 'Premature commit.', testFiles: ['tests/new.test.cjs'], regressionCommand: 'node tests/new.test.cjs', failurePattern: 'REGRESSION failure' });
+  });
+  assert.equal(result.status, 'blocked'); assert.match(result.explanation, /precommitted/); assert.equal(result.checks.length, 0);
+});

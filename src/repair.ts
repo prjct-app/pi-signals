@@ -32,6 +32,7 @@ export async function repair(issue: LocalIssue, repo: Repository, path: string, 
   });
   if (!state.fix) return blocked('No structured repair candidate was provided.');
   if (!repo.tests.length) return blocked('No trusted package validation commands are configured.');
+  if (await must(path, ['git', 'rev-parse', 'HEAD'], signal) !== base) return blocked('The agent changed the candidate base before verification; no precommitted changes are accepted.');
   const fix = state.fix;
   const baselinePath = join(stateDir(), 'worktrees', `baseline-${issue.id.slice(0, 12)}-${Date.now()}`);
   await must(repo.path, ['git', 'worktree', 'add', '--detach', baselinePath, base], signal);

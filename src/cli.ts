@@ -6,7 +6,7 @@ import { SignalStore } from './store.ts';
 async function main() {
   const [action = 'status', argument] = process.argv.slice(2);
   if (action === 'schedule' && argument === 'install') {
-    return (await import('./scheduler.ts')).installSchedule(fileURLToPath(import.meta.url));
+    return (await import('./scheduler.ts')).installSchedule(fileURLToPath(new URL('../bin/cli.mjs', import.meta.url)));
   }
   if (action === 'once') {
     const controller = new AbortController();

@@ -29,7 +29,7 @@ test('capture is local, grounded, private, deduplicated and does not mutate mode
   const stored = JSON.stringify(store.observations(receipt.id)); store.close();
   for (const privateValue of [secret, f.ctx.cwd, 'person@example.com']) assert(!stored.includes(privateValue));
   assert.deepEqual(f.ctx.sessionManager.getBranch(), before); assert.equal(f.ctx.thinkingLevel, 'high');
-  assert.deepEqual([...f.hooks.keys()], ['session_compact_failed']); assert.equal(f.tools.size, 2);
+  assert.deepEqual([...f.hooks.keys()], ['session_start', 'session_compact_failed']); assert.equal(f.tools.size, 2);
 });
 test('privacy failure and unknown target save nothing', async () => {
   const f = fixture({ protect: async () => { throw new Error('vault unavailable'); } });

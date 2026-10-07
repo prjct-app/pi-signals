@@ -4,6 +4,7 @@ import { config, targets, databasePath } from './config.ts';
 import { hideLocalPaths, prepareReport } from './report.ts';
 import { InspectSchema, OBSERVATION, ReportSchema } from './schema.ts';
 import { SignalStore } from './store.ts';
+import { rememberHost } from './host.ts';
 
 const defaults = { config, targets, protect: protectOutboundData, databasePath };
 export type SignalsDependencies = Partial<typeof defaults>;
@@ -11,6 +12,7 @@ const result = (value: unknown) => ({ content: [{ type: 'text' as const, text: J
 const page = <T>(rows: T[], offset: number) => ({ items: rows.slice(0, 20), nextOffset: rows.length > 20 ? offset + 20 : null });
 export function installSignals(pi: ExtensionAPI, dependencies: SignalsDependencies = {}) {
   const deps = { ...defaults, ...dependencies };
+  pi.on('session_start', () => { try { rememberHost(); } catch { /* A host path hint must not interrupt an active session. */ } });
   const catalog = (ctx: ExtensionContext) => {
     const settings = deps.config();
     if (!settings.enabled) throw new Error('Signals is disabled by global configuration.');

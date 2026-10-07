@@ -1,3 +1,8 @@
+## 0.1.1 (2026-10-07)
+
+- Bind the standalone npm CLI to the Pi host's public SDK peers, which Pi intentionally omits from extension installs. Record the host location on session start and use the same bootstrap for scheduled runs.
+- Reject repair candidates that changed their base through an agent-created commit before coordinator verification.
+
 ## 0.1.0 (2026-10-07)
 
 - Capture latency regressions, crashes and concrete response-quality regressions in global `.prjct/shared/signals/signals.sqlite`, with original evidence, versions and model/reasoning provenance.

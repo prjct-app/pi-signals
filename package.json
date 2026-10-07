@@ -1,6 +1,6 @@
 {
   "name": "@prjct.app/pi-signals",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local failure signals, daily agent-owned triage and verified repair candidates for Pi.",
   "type": "module",
   "license": "MIT",
@@ -28,7 +28,8 @@
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
-    "dist"
+    "dist",
+    "bin"
   ],
   "dependencies": {
     "@prjct.app/pi-secrets": "^0.2.6"
@@ -52,9 +53,10 @@
     "test": "node --import ./tests/isolate.mjs --import tsx --test --test-concurrency=2 tests/*.test.ts",
     "check:package": "npm pack --dry-run --ignore-scripts",
     "build": "node scripts/build.mjs",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "pretest": "npm run build"
   },
   "bin": {
-    "pi-signals": "dist/cli.mjs"
+    "pi-signals": "bin/cli.mjs"
   }
 }
