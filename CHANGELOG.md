@@ -1,3 +1,7 @@
+## 0.2.0 (2026-10-09)
+
+- `/signals` opens the shared docked panel, like the other prjct extensions. It lists what needs a fix first, then queued, running, flaky and resolved issues, each with component, status and sightings. An issue's detail shows the triage decision, recent observations and runs. The Daily triage row shows schedule, recent days, repositories and the repair setting. `r` queues an issue for triage again. Outside the TUI the same list prints as text instead of JSON.
+
 ## 0.1.2 (2026-10-09)
 
 - No system-prompt rule. signal_report no longer asks every session to watch Pi and extensions; its description says what it records and when to inspect targets first.

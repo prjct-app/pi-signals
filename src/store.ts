@@ -34,7 +34,8 @@ export class SignalStore {
   list(offset = 0) { return this.db.prepare('SELECT id FROM issues ORDER BY updated DESC,id LIMIT 21 OFFSET ?').all(offset).map(row => this.get(String(row.id))!); }
   observations(id: string, offset = 0, limit = 21) {
     return this.db.prepare('SELECT * FROM observations WHERE issueId=? ORDER BY created,id LIMIT ? OFFSET ?').all(id, limit, offset)
-      .map(row => ({ ...row, payload: JSON.parse(String(row.payload)) }));
+      .map(row => ({ id: String(row.id), issueId: String(row.issueId), version: String(row.version), created: Number(row.created),
+        payload: JSON.parse(String(row.payload)) as { title: string; body: string } }));
   }
   capture(value: Capture, now = Date.now()) {
     return this.transaction(() => {
@@ -91,5 +92,16 @@ export class SignalStore {
     // An interrupted run never counts as fixed.
     this.db.exec("UPDATE issues SET status='new',lastError='Previous worker interrupted; evidence retained' WHERE status IN ('triaging','repairing'); UPDATE runs SET state='interrupted' WHERE state='running'");
   }
-  runs(id: string) { return this.db.prepare('SELECT * FROM runs WHERE issueId=? ORDER BY started').all(id).map(row => ({ ...row, id: String(row.id), state: String(row.state), result: row.result ? JSON.parse(String(row.result)) : undefined })); }
+  /** The latest daily triage days, newest first. */
+  days(limit = 7) {
+    return this.db.prepare('SELECT day,started,finished FROM schedule ORDER BY day DESC LIMIT ?').all(limit)
+      .map(row => ({ day: String(row.day), started: Number(row.started), ...(row.finished == null ? {} : { finished: Number(row.finished) }) }));
+  }
+  runs(id: string) {
+    return this.db.prepare('SELECT * FROM runs WHERE issueId=? ORDER BY started').all(id).map(row => ({
+      id: String(row.id), issueId: String(row.issueId), revision: Number(row.revision), phase: String(row.phase), owner: String(row.owner),
+      state: String(row.state), started: Number(row.started), ...(row.finished == null ? {} : { finished: Number(row.finished) }),
+      result: row.result ? JSON.parse(String(row.result)) as unknown : undefined,
+    }));
+  }
 }

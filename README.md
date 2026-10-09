@@ -24,7 +24,7 @@ Pi's private npm bin directory may not be on your shell PATH. In that case use `
 
 - `signal_report`: select minimal evidence, a stable signature identifying the component and failure mechanism, and one of the three signal categories. The same signature groups repeated sightings; repeated submission of the same session evidence is deduplicated.
 - `signal_inspect`: list `targets`, `issues`, or `observations`. Supply `issueId` for persisted issue observations. Pages have explicit continuation offsets; history is never trimmed.
-- `/signals`: show recent local issues and the configured daily time.
+- `/signals`: the docked panel (shared with the other prjct extensions). What needs a fix comes first, then queued, running, flaky and resolved issues, each with its component, status and sightings. Enter shows the triage decision, recent observations and runs; the **Daily triage** row shows the schedule, recent days, repositories and repair setting. `r` queues an issue for triage again. Outside the TUI the same list prints as text.
 - `pi-signals status`, `show <id>` and `retry <id>`: inspect or explicitly requeue a signal.
 - `pi-signals once`: run queued triage/repair now. `once --scheduled` respects the daily clock and completed-day record.
 - `pi-signals schedule install`: install a macOS LaunchAgent using the absolute installed npm CLI path. An hourly OS wake checks the configured timezone; the worker runs once after the configured hour and catches up after sleep/login. There is no resident polling process inside Pi. Other platforms can schedule `once --scheduled` hourly with their OS scheduler.

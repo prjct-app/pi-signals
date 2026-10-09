@@ -5,6 +5,8 @@ import { hideLocalPaths, prepareReport } from './report.ts';
 import { InspectSchema, OBSERVATION, ReportSchema } from './schema.ts';
 import { SignalStore } from './store.ts';
 import { rememberHost } from './host.ts';
+import { brand, openPanel, panelText } from '@prjct.app/pi-tui-kit';
+import { signalPanelSpec, type SignalPanelOps } from './panel.ts';
 
 const defaults = { config, targets, protect: protectOutboundData, databasePath };
 export type SignalsDependencies = Partial<typeof defaults>;
@@ -48,13 +50,36 @@ export function installSignals(pi: ExtensionAPI, dependencies: SignalsDependenci
       finally { store.close(); }
     },
   });
+  const withStore = <T>(read: (store: SignalStore) => T): T => {
+    const store = new SignalStore(deps.databasePath());
+    try { return read(store); } finally { store.close(); }
+  };
+  /** One snapshot per panel draw; a change clears it. Every issue, not one page. */
+  const panelOps = (): SignalPanelOps => {
+    const cache: { issues?: ReturnType<SignalStore['list']> } = {};
+    const all = (store: SignalStore) => {
+      const pages = (offset: number): ReturnType<SignalStore['list']> => {
+        const rows = store.list(offset);
+        return rows.length > 20 ? [...rows.slice(0, 20), ...pages(offset + 20)] : rows;
+      };
+      return pages(0);
+    };
+    return {
+      config: () => deps.config(),
+      issues: () => (cache.issues ??= withStore(all)),
+      observations: id => withStore(store => store.observations(id, 0, 50)),
+      runs: id => withStore(store => store.runs(id)),
+      days: () => withStore(store => store.days()),
+      retry: id => { cache.issues = undefined; return withStore(store => store.retry(id)); },
+    };
+  };
   pi.registerCommand('signals', {
-    description: 'Show local issues and daily triage configuration',
+    description: brand('signals: local issues in Pi and extensions, what to fix, and the daily triage'),
     async handler(_args, ctx) {
       try {
-        const settings = deps.config(), store = new SignalStore(deps.databasePath());
-        try { ctx.ui.notify(JSON.stringify({ enabled: settings.enabled, daily: `${settings.hour}:${String(settings.minute).padStart(2, '0')} ${settings.timezone}`, issues: page(store.list(), 0) }), 'info'); }
-        finally { store.close(); }
+        const spec = signalPanelSpec(panelOps());
+        if (ctx.mode === 'tui' && ctx.hasUI && typeof ctx.ui.custom === 'function') await openPanel(ctx, spec);
+        else ctx.ui.notify(panelText(spec), 'info');
       } catch { ctx.ui.notify('Cannot read signals configuration or database.', 'error'); }
     },
   });

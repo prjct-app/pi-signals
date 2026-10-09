@@ -54,3 +54,20 @@ test('native failure observations never start a model request; cancellations are
   assert.equal(inspected.items.length, 1); assert.equal(inspected.items[0].data.error, 'incomplete summary');
   assert(!existsSync(f.path));
 });
+
+test('/signals opens the shared panel in the TUI and prints the same list elsewhere, never raw JSON', async () => {
+  const root = temp(), path = join(root, 'signals.sqlite'), ctx = context(root);
+  const commands = new Map<string, any>(), notices: string[] = [], panels: unknown[] = [];
+  installSignals({ registerTool: () => undefined, registerCommand: (name: string, command: any) => commands.set(name, command), on: () => undefined,
+    appendEntry: () => undefined } as unknown as ExtensionAPI,
+  { config: settings, targets: () => [{ id: input.target, version: '1.0.0' }], databasePath: () => path });
+  const store = new SignalStore(path);
+  store.capture({ ...prepareReport(input, { id: input.target, version: '1.0.0' }, ctx as never), payload: { title: input.title, body: 'b' } });
+  store.close();
+  const ui = { notify: (text: string) => notices.push(text), custom: async (factory: unknown) => { panels.push(factory); return undefined; } };
+  await commands.get('signals').handler('', { ...ctx, mode: 'rpc', hasUI: false, ui });
+  assert.equal(notices.length, 1);
+  assert.match(notices[0]!, /^Signals · 1 issue · 0 to fix/);
+  assert.ok(notices[0]!.includes(input.title));
+  assert.doesNotMatch(notices[0]!, /^\{/);
+});
