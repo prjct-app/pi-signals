@@ -1,3 +1,7 @@
+## 0.1.2 (2026-10-09)
+
+- No system-prompt rule. signal_report no longer asks every session to watch Pi and extensions; its description says what it records and when to inspect targets first.
+
 ## 0.1.1 (2026-10-07)
 
 - Bind the standalone npm CLI to the Pi host's public SDK peers, which Pi intentionally omits from extension installs. Record the host location on session start and use the same bootstrap for scheduled runs.

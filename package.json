@@ -1,6 +1,6 @@
 {
   "name": "@prjct.app/pi-signals",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Local failure signals, daily agent-owned triage and verified repair candidates for Pi.",
   "type": "module",
   "license": "MIT",

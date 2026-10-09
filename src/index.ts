@@ -20,8 +20,8 @@ export function installSignals(pi: ExtensionAPI, dependencies: SignalsDependenci
   };
   pi.registerTool({
     name: 'signal_report', label: 'Record failure signal',
-    description: 'Record a local issue in the global .prjct database for an installed extension or Pi: latency regression, crash, or concrete response-quality regression. Supply a stable defect signature, exact session evidence, reproduction steps, expected and actual behavior. No GitHub or model request occurs during capture.',
-    promptGuidelines: ['When you detect a latency regression, crash, or concrete response-quality regression in Pi or an installed extension, record minimal evidence with signal_report, then continue the original task. Use signal_inspect for targets. Detection is a signal, not proof of causality; the active agent and later triage decide.'],
+    // No promptGuidelines: a system-prompt rule asked every session to watch Pi, whatever the task.
+    description: 'Record a local issue in the global .prjct database for an installed extension or Pi: latency regression, crash, or concrete response-quality regression. Supply a stable defect signature, exact session evidence, reproduction steps, expected and actual behavior. Find targets with signal_inspect first; a detection is a signal, not proof of causality. No GitHub or model request occurs during capture; afterwards, continue the original task.',
     parameters: ReportSchema,
     async execute(_id, input, _signal, _update, ctx) {
       const target = catalog(ctx).find(target => target.id === input.target);
