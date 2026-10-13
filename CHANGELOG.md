@@ -1,3 +1,7 @@
+## 0.2.1 (2026-10-13)
+
+- The `seen` list in `evidenceTool` is now a cell holding an immutable array. Each `execute` builds a new array with the additions appended instead of pushing in place; `contains` reads from the cell.
+
 ## 0.2.0 (2026-10-09)
 
 - `/signals` opens the shared docked panel, like the other prjct extensions. It lists what needs a fix first, then queued, running, flaky and resolved issues, each with component, status and sightings. An issue's detail shows the triage decision, recent observations and runs. The Daily triage row shows schedule, recent days, repositories and the repair setting. `r` queues an issue for triage again. Outside the TUI the same list prints as text instead of JSON.
