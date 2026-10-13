@@ -1,5 +1,11 @@
 ## 0.2.1 (2026-10-13)
 
+## 0.2.2
+
+- Add the English package cover to the README, npm archive, and Pi gallery metadata.
+- Publish matching version tags through the package GitHub Actions workflow.
+
+
 - The `seen` list in `evidenceTool` is now a cell holding an immutable array. Each `execute` builds a new array with the additions appended instead of pushing in place; `contains` reads from the cell.
 
 ## 0.2.0 (2026-10-09)
