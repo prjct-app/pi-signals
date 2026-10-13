@@ -1,6 +1,6 @@
 {
   "name": "@prjct.app/pi-signals",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Local failure signals, daily agent-owned triage and verified repair candidates for Pi.",
   "type": "module",
   "license": "MIT",
@@ -12,7 +12,8 @@
     "pi-extension",
     "signals",
     "triage",
-    "quality"
+    "quality",
+    "pi"
   ],
   "publishConfig": {
     "access": "public"
@@ -20,7 +21,8 @@
   "pi": {
     "extensions": [
       "./index.ts"
-    ]
+    ],
+    "image": "https://raw.githubusercontent.com/prjct-app/pi-signals/main/docs/cover.png"
   },
   "files": [
     "index.ts",
@@ -29,15 +31,16 @@
     "LICENSE",
     "CHANGELOG.md",
     "dist",
-    "bin"
+    "bin",
+    "docs/cover.png"
   ],
   "dependencies": {
     "@prjct.app/pi-secrets": "^0.2.6",
     "@prjct.app/pi-tui-kit": "^0.3.5"
   },
   "peerDependencies": {
-    "@earendil-works/pi-ai": ">=1.0.4",
-    "@earendil-works/pi-coding-agent": ">=1.0.4",
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
     "typebox": "*"
   },
   "devDependencies": {
@@ -59,5 +62,13 @@
   },
   "bin": {
     "pi-signals": "bin/cli.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prjct-app/pi-signals.git"
+  },
+  "homepage": "https://github.com/prjct-app/pi-signals#readme",
+  "bugs": {
+    "url": "https://github.com/prjct-app/pi-signals/issues"
   }
 }
