@@ -43,10 +43,10 @@ export async function repair(issue: LocalIssue, repo: Repository, path: string, 
     if (!source.startsWith(path + sep) || !destination.startsWith(baselinePath + sep)) return blocked('Regression file escaped the worktree.');
     // Refuse symlinks throughout either path; do not copy arbitrary external files.
     for (const root of [path, baselinePath]) {
-      let current = root;
+      const cursor = { current: root };
       for (const part of file.split('/')) {
-        current = join(current, part);
-        const stat = await lstat(current).catch(() => undefined);
+        cursor.current = join(cursor.current, part);
+        const stat = await lstat(cursor.current).catch(() => undefined);
         if (stat?.isSymbolicLink()) return blocked('Regression paths must not contain symlinks.');
       }
     }
@@ -62,7 +62,7 @@ export async function repair(issue: LocalIssue, repo: Repository, path: string, 
   if (await protectOutboundData(diff) !== diff) return blocked('The candidate diff contains data caught by outbound protection; publication is blocked.');
   await must(path, ['git', 'commit', '-m', `fix: ${issue.title}`], signal);
   const head = await must(path, ['git', 'rev-parse', 'HEAD'], signal);
-  for (let sample = 0; sample < 3; sample++) {
+  for (const _sample of [0, 1, 2]) {
     const before = await command(baselinePath, fix.regressionCommand, signal); checks.push(before);
     if (before.code === 0 || !before.output.includes(fix.failurePattern)) return blocked('The unchanged baseline did not consistently reproduce the claimed failure.');
     const after = await command(path, fix.regressionCommand, signal); checks.push(after);

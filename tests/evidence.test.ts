@@ -9,10 +9,11 @@ test('evidence reads only the requested page and all original observations remai
   const reader = evidenceTool((offset, limit) => { requests.push([offset, limit]); return all.slice(offset, offset + limit); });
   assert.equal(requests.length, 0);
   const seen: number[] = [];
-  for (let offset: number | null = 0; offset !== null;) {
-    const result = await reader.tool.execute('read', { offset, limit: 7 }, undefined, undefined, {} as ExtensionToolContext);
+  const cursor: { offset: number | null } = { offset: 0 };
+  while (cursor.offset !== null) {
+    const result = await reader.tool.execute('read', { offset: cursor.offset, limit: 7 }, undefined, undefined, {} as ExtensionToolContext);
     const page = JSON.parse((result.content[0] as { text: string }).text);
-    seen.push(...page.items.map((item: { id: number }) => item.id)); offset = page.nextOffset;
+    seen.push(...page.items.map((item: { id: number }) => item.id)); cursor.offset = page.nextOffset;
   }
   assert.deepEqual(seen, all.map(item => item.id)); assert(requests.every(([, limit]) => limit === 8));
   assert(reader.contains('Original observation 56')); assert(!reader.contains('Fabricated observation'));
